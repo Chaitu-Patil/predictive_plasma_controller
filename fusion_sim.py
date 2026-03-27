@@ -35,21 +35,16 @@ plt.rcParams["lines.linewidth"] = 1.2
 
 
 def density_ramp(t):
-    tau = 20.0
-    return N0 + RAMP_RATE * tau * (1 - np.exp(-t / tau))
+    return N0 + RAMP_RATE * t
 
-def density_oscillatory(t):
-    damping = np.exp(-t / 200.0)
-    return N0 + damping * (3e18 * np.sin(4 * t) + 1e18 * np.sin(9 * t))
+def density_oscillatory(t, A=5e18, omega=4):
+    return N0 + A * np.sin(omega * t)
 
-def density_noise(t, sigma=3e18):
+def density_noise(t, sigma=1e18):
     return N0 + np.random.normal(0, sigma)
 
-def density_spike(t, spike_amount=8e18, elm_interval=0.5, elm_duration=0.02):
-    phase = (t + np.random.normal(0, 0.002)) % elm_interval
-    if phase < elm_duration:
-        return N0 + spike_amount
-    return N0
+def density_spike(t, spike_start=2, spike_end=3, spike_amount=8e18):
+    return N0 + spike_amount if spike_start <= t <= spike_end else N0
 
 density_models = {
     "Ramp":        density_ramp,
